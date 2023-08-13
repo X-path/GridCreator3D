@@ -6,22 +6,17 @@ using UnityEngine.UI;
 
 public class GridGenerator : MonoBehaviour
 {
-    float planeSize = 5.0f; //Area Size
+    [Header("Values")]
     public int nValue = 3;
-    public GameObject gridCellPrefab; // Grid prefab
-    public float cellSize = 1.0f; // Cell Size
-    public GameObject plane; // Plane
-    List<GameObject> gridPrefabs = new List<GameObject>();
+    float cellSize = 1.0f; 
+    float planeSize = 5.0f; 
+    public GameObject cellPrefab; 
+    List<GameObject> cellPrefabs = new List<GameObject>();
 
+
+    [Header("UI")]
     public TMP_InputField inputField; // Input Field
-    private void OnEnable()
-    {
 
-    }
-    private void OnDisable()
-    {
-
-    }
     void Start()
     {
         GenerateGrid();
@@ -34,6 +29,11 @@ public class GridGenerator : MonoBehaviour
         if (!string.IsNullOrEmpty(inputField.text))
             nValue = int.Parse(inputField.text);
 
+        if (nValue < 3)
+            return;
+
+        MatchController.instance.gridGeneratorNValue = nValue;    
+
         float cellSize = planeSize / (float)nValue;
 
         for (int x = 0; x < nValue; x++)
@@ -41,25 +41,23 @@ public class GridGenerator : MonoBehaviour
             for (int y = 0; y < nValue; y++)
             {
 
-                GameObject gridCell = Instantiate(gridCellPrefab) as GameObject;
+                GameObject gridCell = Instantiate(cellPrefab) as GameObject;
                 gridCell.transform.parent = this.transform;
-                gridCell.transform.localPosition =new Vector3((x * cellSize) - (cellSize * (nValue - 1) * 0.5f), (y * cellSize) - (cellSize * (nValue - 1) * 0.5f), 0f); 
-                Vector3 newScale = gridCell.transform.localScale;
-                newScale.x = cellSize;
-                newScale.y = cellSize;
-                gridCell.transform.localScale =  new Vector3(cellSize, cellSize, cellSize);
+                gridCell.transform.localPosition = new Vector3((x * cellSize) - (cellSize * (nValue - 1) * 0.5f), (y * cellSize) - (cellSize * (nValue - 1) * 0.5f), 0f);
+                gridCell.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
 
-                gridPrefabs.Add(gridCell);
+                cellPrefabs.Add(gridCell);
+                gridCell.transform.GetComponent<CellController>().cellNumber += cellPrefabs.Count;
             }
         }
 
     }
     void GridListClear()
     {
-        for (int i = gridPrefabs.Count - 1; i >= 0; i--)
+        for (int i = cellPrefabs.Count - 1; i >= 0; i--)
         {
-            GameObject _go = gridPrefabs[i];
-            gridPrefabs.RemoveAt(i);
+            GameObject _go = cellPrefabs[i];
+            cellPrefabs.RemoveAt(i);
             Destroy(_go);
         }
 

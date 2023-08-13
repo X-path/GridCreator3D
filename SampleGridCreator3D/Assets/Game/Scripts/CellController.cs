@@ -5,16 +5,24 @@ using UnityEngine;
 
 public class CellController : MonoBehaviour
 {
+    [Header("Values")]
     public GameObject textObject;
-    bool isDown = false;
+    [HideInInspector] public bool isDown = false;
+    public int cellNumber = 0;
     private void OnMouseDown()
     {
         if (isDown)
             return;
 
-        Debug.Log("OnMouseDown");
         isDown = true;
         textObject.SetActive(true);
+        MatchController.instance.MatchCheck(this.gameObject);
+    }
+
+    public void CellReset()
+    {
+        isDown = false;
+        textObject.SetActive(false);
     }
 
 }
